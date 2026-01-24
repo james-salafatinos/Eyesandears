@@ -222,6 +222,35 @@ header h1 {
     transform: scale(1.05);
 }
 
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.status-unprocessed {
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.status-processing {
+    background: #D1ECF1;
+    color: #0C5460;
+}
+
+.status-processed {
+    background: #D4EDDA;
+    color: #155724;
+}
+
+.status-failed {
+    background: #F8D7DA;
+    color: #721C24;
+}
+
 .empty-state {
     text-align: center;
     padding: 60px 20px;

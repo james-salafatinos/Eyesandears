@@ -15,6 +15,16 @@ async function loadFiles() {
     }
 }
 
+function getStatusBadge(status) {
+    const badges = {
+        unprocessed: '<span class="status-badge status-unprocessed">⏳ Unprocessed</span>',
+        processing: '<span class="status-badge status-processing">⚙️ Processing</span>',
+        processed: '<span class="status-badge status-processed">✅ Processed</span>',
+        failed: '<span class="status-badge status-failed">❌ Failed</span>'
+    };
+    return badges[status] || badges.unprocessed;
+}
+
 function renderFiles() {
     const fileList = document.getElementById('fileList');
     
@@ -34,7 +44,10 @@ function renderFiles() {
         fileList.innerHTML = files.map(file => `
             <div class="file-item" data-filename="${file.name}">
                 <div class="file-info">
-                    <div class="file-name">🎵 ${file.name}</div>
+                    <div class="file-name">
+                        🎵 ${file.name}
+                        ${getStatusBadge(file.status)}
+                    </div>
                     <div class="file-meta">
                         <span>📊 ${formatSize(file.size)}</span>
                         <span>📅 ${formatDate(file.modified)}</span>
@@ -60,7 +73,10 @@ function renderFiles() {
         fileList.innerHTML = files.map(file => `
             <div class="file-item" data-filename="${file.name}">
                 <div class="file-info">
-                    <div class="file-name">📷 ${file.name}</div>
+                    <div class="file-name">
+                        📷 ${file.name}
+                        ${getStatusBadge(file.status)}
+                    </div>
                     <div class="file-meta">
                         <span>📊 ${formatSize(file.size)}</span>
                         <span>📅 ${formatDate(file.modified)}</span>

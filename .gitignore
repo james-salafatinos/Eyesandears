@@ -2,5 +2,6 @@ node_modules/
 dist/
 recordings/
 images/
+processing-status.json
 *.log
 .DS_Store
