@@ -2,8 +2,27 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
 
-const IMAGES_DIR = path.join(__dirname, '..', 'images');
-const CAPTURE_INTERVAL_SECONDS = 1;
+interface Config {
+  image: {
+    captureIntervalSeconds: number;
+    width: number;
+    height: number;
+    quality: number;
+  };
+  directories: {
+    images: string;
+  };
+}
+
+function loadConfig(): Config {
+  const configPath = path.join(__dirname, '..', 'config.json');
+  const configData = fs.readFileSync(configPath, 'utf-8');
+  return JSON.parse(configData);
+}
+
+const config = loadConfig();
+const IMAGES_DIR = path.join(__dirname, '..', config.directories.images);
+const CAPTURE_INTERVAL_SECONDS = config.image.captureIntervalSeconds;
 
 function ensureImagesDir(): void {
   if (!fs.existsSync(IMAGES_DIR)) {
@@ -29,9 +48,9 @@ function captureImage(): Promise<string> {
     if (process.platform === 'linux') {
       captureArgs = [
         '-o', filepath,
-        '--width', '1920',
-        '--height', '1080',
-        '--quality', '85',
+        '--width', config.image.width.toString(),
+        '--height', config.image.height.toString(),
+        '--quality', config.image.quality.toString(),
         '--timeout', '1',
         '--nopreview'
       ];

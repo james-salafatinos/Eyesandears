@@ -1,0 +1,18 @@
+{
+  "audio": {
+    "chunkDurationSeconds": 30,
+    "sampleRate": 16000,
+    "channels": 1,
+    "codec": "pcm_s16le"
+  },
+  "image": {
+    "captureIntervalSeconds": 10,
+    "width": 1920,
+    "height": 1080,
+    "quality": 85
+  },
+  "directories": {
+    "recordings": "./recordings",
+    "images": "./images"
+  }
+}

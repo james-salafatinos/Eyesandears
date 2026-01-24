@@ -2,8 +2,27 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
 
-const RECORDING_DIR = path.join(__dirname, '..', 'recordings');
-const CHUNK_DURATION_SECONDS = 30;
+interface Config {
+  audio: {
+    chunkDurationSeconds: number;
+    sampleRate: number;
+    channels: number;
+    codec: string;
+  };
+  directories: {
+    recordings: string;
+  };
+}
+
+function loadConfig(): Config {
+  const configPath = path.join(__dirname, '..', 'config.json');
+  const configData = fs.readFileSync(configPath, 'utf-8');
+  return JSON.parse(configData);
+}
+
+const config = loadConfig();
+const RECORDING_DIR = path.join(__dirname, '..', config.directories.recordings);
+const CHUNK_DURATION_SECONDS = config.audio.chunkDurationSeconds;
 
 function ensureRecordingDir(): void {
   if (!fs.existsSync(RECORDING_DIR)) {
@@ -31,9 +50,9 @@ function recordAudioChunk(): Promise<string> {
         '-f', 'dshow',
         '-i', 'audio=Microphone',
         '-t', CHUNK_DURATION_SECONDS.toString(),
-        '-acodec', 'pcm_s16le',
-        '-ar', '16000',
-        '-ac', '1',
+        '-acodec', config.audio.codec,
+        '-ar', config.audio.sampleRate.toString(),
+        '-ac', config.audio.channels.toString(),
         filepath
       ];
     } else {
@@ -41,9 +60,9 @@ function recordAudioChunk(): Promise<string> {
         '-f', 'alsa',
         '-i', 'default',
         '-t', CHUNK_DURATION_SECONDS.toString(),
-        '-acodec', 'pcm_s16le',
-        '-ar', '16000',
-        '-ac', '1',
+        '-acodec', config.audio.codec,
+        '-ar', config.audio.sampleRate.toString(),
+        '-ac', config.audio.channels.toString(),
         filepath
       ];
     }

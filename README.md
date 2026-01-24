@@ -28,14 +28,25 @@ Multi-media capture system that records audio in 30-second chunks and captures i
 
 ## Installation
 
-1. Clone the repository and navigate to the project directory
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd eyesandears3
+```
 
 2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Build the TypeScript code:
+3. Create configuration file:
+```bash
+cp config.example.json config.json
+```
+
+Edit `config.json` to customize capture settings (intervals, quality, directories).
+
+4. Build the TypeScript code:
 ```bash
 npm run build
 ```
@@ -60,44 +71,51 @@ The web interface allows you to:
 
 ### Recording Audio
 
-To start continuous audio recording (30-second chunks):
+Start capturing audio:
 
 ```bash
 npm run capture:audio
 ```
 
 This will:
-- Create a `recordings/` directory if it doesn't exist
-- Record 30-second audio chunks continuously
+- Record audio in configurable chunks (default: 30 seconds)
 - Save files as `audio_YYYY-MM-DDTHH-MM-SS.wav`
 - Continue recording until you press Ctrl+C
 
 ### Capturing Images
 
-To start continuous image capture (1-second intervals):
+Start capturing images:
 
 ```bash
 npm run capture:images
 ```
 
 This will:
-- Create an `images/` directory if it doesn't exist
-- Capture images every 1 second
+- Capture images at configurable intervals (default: 10 seconds)
 - Save files as `image_YYYY-MM-DDTHH-MM-SS.jpg`
 - Continue capturing until you press Ctrl+C
 
-**Note**: On Raspberry Pi, this uses `raspistill`. On Windows, it uses FFmpeg with your webcam.
+**Note**: On Raspberry Pi, this uses `rpicam-still`. On Windows, it uses FFmpeg with your webcam.
 
-### Media Formats
+### Configuration
 
-**Audio** - WAV files:
-- Sample Rate: 16000 Hz
-- Channels: 1 (mono)
-- Encoding: PCM 16-bit
+All capture settings are configurable in `config.json`:
 
-**Images** - JPEG files:
-- Resolution: 1920x1080 (configurable)
-- Quality: 85%
+**Audio Settings:**
+- `chunkDurationSeconds`: Duration of each audio recording (default: 30)
+- `sampleRate`: Audio sample rate in Hz (default: 16000)
+- `channels`: Number of audio channels (default: 1 for mono)
+- `codec`: Audio codec (default: pcm_s16le)
+
+**Image Settings:**
+- `captureIntervalSeconds`: Time between image captures (default: 10)
+- `width`: Image width in pixels (default: 1920)
+- `height`: Image height in pixels (default: 1080)
+- `quality`: JPEG quality 0-100 (default: 85)
+
+**Directory Settings:**
+- `recordings`: Directory for audio files (default: ./recordings)
+- `images`: Directory for image files (default: ./images)
 
 ## Project Structure
 
@@ -106,13 +124,16 @@ eyesandears3/
 ├── src/
 │   ├── audioCapture.ts    # Audio recording logic
 │   ├── imageCapture.ts    # Image capture logic
-│   └── server.ts          # Express API server
+│   ├── server.ts          # Express API server
+│   └── statusTracker.ts   # Processing status tracking
 ├── public/
 │   ├── index.html         # Web UI
 │   ├── styles.css         # Styling
 │   └── app.js             # Frontend logic
 ├── recordings/            # Audio files (created automatically)
 ├── images/                # Image files (created automatically)
+├── config.json            # Configuration file (create from example)
+├── config.example.json    # Example configuration
 ├── dist/                  # Compiled JavaScript (created on build)
 ├── package.json
 ├── tsconfig.json
@@ -175,7 +196,7 @@ For automatic startup on boot, consider creating systemd services for each compo
 ### Raspberry Pi: "Camera not detected"
 - Ensure camera is properly connected
 - Enable camera: `sudo raspi-config` → Interface Options → Camera
-- Test camera: `raspistill -o test.jpg`
+- Test camera: `rpicam-still -o test.jpg`
 - Check camera status: `vcgencmd get_camera`
 
 ### TypeScript Errors
