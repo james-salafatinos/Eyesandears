@@ -3,30 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eyes and Ears - Audio Manager</title>
+    <title>Eyes and Ears - Media Manager</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎙️ Eyes and Ears</h1>
-            <p class="subtitle">Audio Recording Manager</p>
+            <h1>👁️👂 Eyes and Ears</h1>
+            <p class="subtitle">Audio & Image Manager</p>
         </header>
 
         <div class="controls">
             <button id="refreshBtn" class="btn btn-primary">
-                <span>🔄</span> Refresh Files
+                <span>🔄</span> Refresh
             </button>
-            <label for="fileUpload" class="btn btn-secondary">
-                <span>📤</span> Upload Audio
-                <input type="file" id="fileUpload" accept="audio/wav" style="display: none;">
-            </label>
+            <div class="view-toggle">
+                <button id="audioViewBtn" class="btn btn-toggle active">
+                    <span>🎵</span> Audio
+                </button>
+                <button id="imageViewBtn" class="btn btn-toggle">
+                    <span>📷</span> Images
+                </button>
+            </div>
         </div>
 
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-value" id="totalFiles">0</div>
-                <div class="stat-label">Total Files</div>
+                <div class="stat-label" id="totalFilesLabel">Total Audio</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value" id="totalSize">0 MB</div>

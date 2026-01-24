@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsc && node dist/server.js",
-    "capture": "node dist/audioCapture.js"
+    "capture:audio": "node dist/audioCapture.js",
+    "capture:images": "node dist/imageCapture.js"
   },
   "keywords": [],
   "author": "",

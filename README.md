@@ -1,12 +1,14 @@
-# Eyes and Ears 3 - Audio Capture & Management System
+# Eyes and Ears 3 - Audio & Image Capture System
 
-Audio capture system that records 30-second audio chunks and provides a web interface for managing recordings.
+Multi-media capture system that records audio in 30-second chunks and captures images every second, with a web interface for managing all media.
 
 ## Features
 
 - **Audio Capture**: Records audio in 30-second chunks using FFmpeg
-- **Web UI**: Modern interface to view, download, delete, and process audio files
-- **File Management**: Upload, download, and delete audio recordings
+- **Image Capture**: Captures images every 1 second using Raspberry Pi Camera or webcam
+- **Web UI**: Modern interface with toggle between audio and image views
+- **Audio Playback**: Play audio files directly in the browser
+- **File Management**: View, download, delete, and process both audio and images
 - **Cross-Platform**: Works on Windows (development) and Raspberry Pi (deployment)
 
 ## Prerequisites
@@ -21,6 +23,8 @@ Audio capture system that records 30-second audio chunks and provides a web inte
 - Node.js (v18 or higher)
 - FFmpeg: `sudo apt-get install ffmpeg`
 - ALSA audio tools: `sudo apt-get install alsa-utils`
+- Raspberry Pi Camera Module 3 (or compatible camera)
+- Enable camera: `sudo raspi-config` → Interface Options → Camera
 
 ## Installation
 
@@ -49,18 +53,17 @@ npm start
 Then open your browser to: http://localhost:3000
 
 The web interface allows you to:
-- View all recorded audio files
-- Download recordings
-- Delete recordings
-- Upload audio files
-- Process files (placeholder for future processing logic)
+- Toggle between Audio and Image views
+- **Audio**: Play, download, delete, and process audio files
+- **Images**: View thumbnails, open full-size, download, delete, and process images
+- Real-time file statistics
 
 ### Recording Audio
 
 To start continuous audio recording (30-second chunks):
 
 ```bash
-npm run capture
+npm run capture:audio
 ```
 
 This will:
@@ -69,12 +72,32 @@ This will:
 - Save files as `audio_YYYY-MM-DDTHH-MM-SS.wav`
 - Continue recording until you press Ctrl+C
 
-### Audio Format
+### Capturing Images
 
-Recordings are saved as WAV files with the following specifications:
+To start continuous image capture (1-second intervals):
+
+```bash
+npm run capture:images
+```
+
+This will:
+- Create an `images/` directory if it doesn't exist
+- Capture images every 1 second
+- Save files as `image_YYYY-MM-DDTHH-MM-SS.jpg`
+- Continue capturing until you press Ctrl+C
+
+**Note**: On Raspberry Pi, this uses `raspistill`. On Windows, it uses FFmpeg with your webcam.
+
+### Media Formats
+
+**Audio** - WAV files:
 - Sample Rate: 16000 Hz
 - Channels: 1 (mono)
 - Encoding: PCM 16-bit
+
+**Images** - JPEG files:
+- Resolution: 1920x1080 (configurable)
+- Quality: 85%
 
 ## Project Structure
 
@@ -82,12 +105,14 @@ Recordings are saved as WAV files with the following specifications:
 eyesandears3/
 ├── src/
 │   ├── audioCapture.ts    # Audio recording logic
+│   ├── imageCapture.ts    # Image capture logic
 │   └── server.ts          # Express API server
 ├── public/
 │   ├── index.html         # Web UI
 │   ├── styles.css         # Styling
 │   └── app.js             # Frontend logic
 ├── recordings/            # Audio files (created automatically)
+├── images/                # Image files (created automatically)
 ├── dist/                  # Compiled JavaScript (created on build)
 ├── package.json
 ├── tsconfig.json
@@ -96,11 +121,17 @@ eyesandears3/
 
 ## API Endpoints
 
-- `GET /api/files` - List all audio files
-- `GET /api/files/:filename` - Download a specific file
-- `DELETE /api/files/:filename` - Delete a specific file
-- `POST /api/files/:filename/process` - Process a file (placeholder)
-- `POST /api/upload` - Upload an audio file
+**Audio:**
+- `GET /api/audio/files` - List all audio files
+- `GET /api/audio/files/:filename` - Serve/download audio file
+- `DELETE /api/audio/files/:filename` - Delete audio file
+- `POST /api/audio/files/:filename/process` - Process audio file (placeholder)
+
+**Images:**
+- `GET /api/images/files` - List all image files
+- `GET /api/images/files/:filename` - Serve/download image file
+- `DELETE /api/images/files/:filename` - Delete image file
+- `POST /api/images/files/:filename/process` - Process image (placeholder)
 
 ## Windows Testing
 
@@ -108,9 +139,14 @@ On Windows, FFmpeg uses DirectShow for audio capture. Make sure your microphone 
 
 To test audio capture:
 1. Run `npm run build`
-2. Run `npm run capture`
+2. Run `npm run capture:audio`
 3. Speak into your microphone
 4. Check the `recordings/` folder for WAV files
+
+To test image capture:
+1. Run `npm run build`
+2. Run `npm run capture:images`
+3. Check the `images/` folder for JPEG files
 
 ## Raspberry Pi Deployment
 
@@ -118,9 +154,11 @@ To test audio capture:
 2. Install dependencies: `npm install`
 3. Build: `npm run build`
 4. Run the server: `npm start`
-5. Run audio capture: `npm run capture`
+5. In separate terminals:
+   - Audio capture: `npm run capture:audio`
+   - Image capture: `npm run capture:images`
 
-For automatic startup on boot, consider creating a systemd service.
+For automatic startup on boot, consider creating systemd services for each component.
 
 ## Troubleshooting
 
@@ -134,17 +172,25 @@ For automatic startup on boot, consider creating a systemd service.
 - Test recording: `arecord -d 5 test.wav`
 - Ensure your user has audio permissions: `sudo usermod -a -G audio $USER`
 
+### Raspberry Pi: "Camera not detected"
+- Ensure camera is properly connected
+- Enable camera: `sudo raspi-config` → Interface Options → Camera
+- Test camera: `raspistill -o test.jpg`
+- Check camera status: `vcgencmd get_camera`
+
 ### TypeScript Errors
 The lint errors shown in the IDE are expected before running `npm install`. They will resolve once dependencies are installed.
 
 ## Future Enhancements
 
-- Implement actual audio processing logic
+- Implement actual audio/image processing logic
 - Add authentication
-- Support for different audio formats
+- Support for different media formats
 - Real-time audio visualization
-- Automatic transcription
+- Automatic transcription for audio
+- Object detection for images
 - Cloud storage integration
+- Synchronized audio-image capture
 
 ## License
 
