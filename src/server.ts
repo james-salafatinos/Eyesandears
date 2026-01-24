@@ -11,6 +11,11 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
+
 ensureRecordingDir();
 ensureImagesDir();
 
@@ -181,14 +186,30 @@ app.post('/api/images/files/:filename/process', (req: Request, res: Response) =>
 app.get('/api/unprocessed', (req: Request, res: Response) => {
   try {
     const unprocessed = statusTracker.getUnprocessedFiles();
-    const filesWithPaths = unprocessed.map(file => ({
-      ...file,
-      downloadUrl: file.type === 'audio' 
-        ? `/api/audio/files/${file.filename}`
-        : `/api/images/files/${file.filename}`
-    }));
+    const filesWithDetails = unprocessed.map(file => {
+      const dir = file.type === 'audio' ? RECORDING_DIR : IMAGES_DIR;
+      const filepath = path.join(dir, file.filename);
+      
+      let size = 0;
+      try {
+        const stats = fs.statSync(filepath);
+        size = stats.size;
+      } catch (error) {
+        console.error(`File not found: ${filepath}`);
+      }
+      
+      return {
+        filename: file.filename,
+        type: file.type,
+        size: size,
+        timestamp: file.createdAt,
+        downloadUrl: file.type === 'audio' 
+          ? `/api/audio/files/${file.filename}`
+          : `/api/images/files/${file.filename}`
+      };
+    });
     
-    res.json({ files: filesWithPaths });
+    res.json({ files: filesWithDetails });
   } catch (error) {
     console.error('Error getting unprocessed files:', error);
     res.status(500).json({ error: 'Failed to get unprocessed files' });
