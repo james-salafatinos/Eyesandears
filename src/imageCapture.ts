@@ -29,30 +29,30 @@ function captureImage(): Promise<string> {
     if (process.platform === 'linux') {
       captureArgs = [
         '-o', filepath,
-        '-t', '1',
-        '--nopreview',
         '--width', '1920',
         '--height', '1080',
-        '--quality', '85'
+        '--quality', '85',
+        '--timeout', '1',
+        '--nopreview'
       ];
       
-      const raspistill = spawn('raspistill', captureArgs);
+      const rpicam = spawn('rpicam-still', captureArgs);
       
-      raspistill.stderr.on('data', (data) => {
-        console.log(`raspistill: ${data}`);
+      rpicam.stderr.on('data', (data) => {
+        console.log(`rpicam-still: ${data}`);
       });
       
-      raspistill.on('close', (code) => {
+      rpicam.on('close', (code) => {
         if (code === 0) {
           console.log(`Image saved: ${filename}`);
           resolve(filepath);
         } else {
-          reject(new Error(`raspistill exited with code ${code}`));
+          reject(new Error(`rpicam-still exited with code ${code}`));
         }
       });
       
-      raspistill.on('error', (err) => {
-        reject(new Error(`Failed to start raspistill: ${err.message}`));
+      rpicam.on('error', (err) => {
+        reject(new Error(`Failed to start rpicam-still: ${err.message}`));
       });
     } else {
       captureArgs = [
