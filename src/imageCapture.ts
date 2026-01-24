@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
+import * as statusTracker from './statusTracker';
 
 interface Config {
   image: {
@@ -64,6 +65,7 @@ function captureImage(): Promise<string> {
       rpicam.on('close', (code) => {
         if (code === 0) {
           console.log(`Image saved: ${filename}`);
+          statusTracker.registerFile('image', filename);
           resolve(filepath);
         } else {
           reject(new Error(`rpicam-still exited with code ${code}`));
@@ -91,6 +93,7 @@ function captureImage(): Promise<string> {
       ffmpeg.on('close', (code) => {
         if (code === 0) {
           console.log(`Image saved: ${filename}`);
+          statusTracker.registerFile('image', filename);
           resolve(filepath);
         } else {
           reject(new Error(`ffmpeg exited with code ${code}`));

@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
+import * as statusTracker from './statusTracker';
 
 interface Config {
   audio: {
@@ -76,6 +77,7 @@ function recordAudioChunk(): Promise<string> {
     ffmpeg.on('close', (code) => {
       if (code === 0) {
         console.log(`Recording saved: ${filename}`);
+        statusTracker.registerFile('audio', filename);
         resolve(filepath);
       } else {
         reject(new Error(`FFmpeg exited with code ${code}`));
