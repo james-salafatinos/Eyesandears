@@ -4,11 +4,13 @@ Multi-media capture system that records audio in 30-second chunks and captures i
 
 ## Features
 
-- **Audio Capture**: Records audio in 30-second chunks using FFmpeg
-- **Image Capture**: Captures images every 1 second using Raspberry Pi Camera or webcam
+- **Audio Capture**: Records audio in configurable chunks using FFmpeg
+- **Image Capture**: Captures images at configurable intervals using Raspberry Pi Camera or webcam
+- **Automatic Retention Policy**: Automatically deletes files older than configured retention period (default: 3 hours)
 - **Web UI**: Modern interface with toggle between audio and image views
 - **Audio Playback**: Play audio files directly in the browser
 - **File Management**: View, download, delete, and process both audio and images
+- **Processing Status Tracking**: Track which files are unprocessed, processing, or processed
 - **Cross-Platform**: Works on Windows (development) and Raspberry Pi (deployment)
 
 ## Prerequisites
@@ -106,12 +108,14 @@ All capture settings are configurable in `config.json`:
 - `sampleRate`: Audio sample rate in Hz (default: 16000)
 - `channels`: Number of audio channels (default: 1 for mono)
 - `codec`: Audio codec (default: pcm_s16le)
+- `retentionHours`: Hours to retain audio files before auto-deletion (default: 3)
 
 **Image Settings:**
 - `captureIntervalSeconds`: Time between image captures (default: 10)
 - `width`: Image width in pixels (default: 1920)
 - `height`: Image height in pixels (default: 1080)
 - `quality`: JPEG quality 0-100 (default: 85)
+- `retentionHours`: Hours to retain images before auto-deletion (default: 3)
 
 **Directory Settings:**
 - `recordings`: Directory for audio files (default: ./recordings)
@@ -125,7 +129,8 @@ eyesandears3/
 │   ├── audioCapture.ts    # Audio recording logic
 │   ├── imageCapture.ts    # Image capture logic
 │   ├── server.ts          # Express API server
-│   └── statusTracker.ts   # Processing status tracking
+│   ├── statusTracker.ts   # Processing status tracking
+│   └── fileCleanup.ts     # Automatic file retention cleanup
 ├── public/
 │   ├── index.html         # Web UI
 │   ├── styles.css         # Styling
