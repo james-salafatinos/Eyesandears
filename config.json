@@ -3,15 +3,13 @@
     "chunkDurationSeconds": 60,
     "sampleRate": 16000,
     "channels": 1,
-    "codec": "pcm_s16le",
-    "retentionHours": 1000
+    "codec": "pcm_s16le"
   },
   "image": {
     "captureIntervalSeconds": 60,
     "width": 1920,
     "height": 1080,
-    "quality": 85,
-    "retentionHours": 1000
+    "quality": 85
   },
   "directories": {
     "recordings": "./recordings",

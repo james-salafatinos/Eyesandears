@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
 import * as statusTracker from './statusTracker';
-import { cleanupOldFiles } from './fileCleanup';
 
 interface Config {
   image: {
@@ -10,7 +9,6 @@ interface Config {
     width: number;
     height: number;
     quality: number;
-    retentionHours: number;
   };
   directories: {
     images: string;
@@ -68,7 +66,6 @@ function captureImage(): Promise<string> {
         if (code === 0) {
           console.log(`Image saved: ${filename}`);
           statusTracker.registerFile('image', filename);
-          cleanupOldFiles(IMAGES_DIR, config.image.retentionHours, 'image');
           resolve(filepath);
         } else {
           reject(new Error(`rpicam-still exited with code ${code}`));
@@ -97,7 +94,6 @@ function captureImage(): Promise<string> {
         if (code === 0) {
           console.log(`Image saved: ${filename}`);
           statusTracker.registerFile('image', filename);
-          cleanupOldFiles(IMAGES_DIR, config.image.retentionHours, 'image');
           resolve(filepath);
         } else {
           reject(new Error(`ffmpeg exited with code ${code}`));

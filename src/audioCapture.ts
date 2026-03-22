@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
 import * as statusTracker from './statusTracker';
-import { cleanupOldFiles } from './fileCleanup';
 
 interface Config {
   audio: {
@@ -10,7 +9,6 @@ interface Config {
     sampleRate: number;
     channels: number;
     codec: string;
-    retentionHours: number;
   };
   directories: {
     recordings: string;
@@ -80,7 +78,6 @@ function recordAudioChunk(): Promise<string> {
       if (code === 0) {
         console.log(`Recording saved: ${filename}`);
         statusTracker.registerFile('audio', filename);
-        cleanupOldFiles(RECORDING_DIR, config.audio.retentionHours, 'audio');
         resolve(filepath);
       } else {
         reject(new Error(`FFmpeg exited with code ${code}`));
